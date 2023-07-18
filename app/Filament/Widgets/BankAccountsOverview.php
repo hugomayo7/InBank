@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Http;
 
 class BankAccountsOverview extends BaseWidget
 {
+    protected function getColumns(): int
+    {
+        return 3;
+    }
+
     protected function getCards(): array
     {
         $powensDomainUrl = env('POWENS_DOMAIN_URL');

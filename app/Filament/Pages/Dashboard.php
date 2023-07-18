@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Widgets\BankAccountsOverview;
+use App\Filament\Widgets\TotalBalanceOverview;
 use App\Interfaces\PowensRepositoryInterface;
 use App\Repository\PowensRepository;
 use Filament\Pages\Dashboard as BasePage;
@@ -10,7 +11,7 @@ use Filament\Pages\Dashboard as BasePage;
 class Dashboard extends BasePage
 {
     protected static string $view = 'filament.pages.dashboard';
-    protected static ?string $navigationIcon = 'fas-magnifying-glass';
+    protected static ?string $navigationIcon = 'fas-home';
 
     public static $icon = 'heroicon-s-home';
 
@@ -27,7 +28,8 @@ class Dashboard extends BasePage
     protected function getWidgets(): array
     {
         return [
-            BankAccountsOverview::class,
+            TotalBalanceOverview::class,
+            BankAccountsOverview::class
         ];
     }
 

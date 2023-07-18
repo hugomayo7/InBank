@@ -96,14 +96,26 @@ class PowensRepository implements PowensRepositoryInterface
                         ->send();
                 }
             }
-            //TODO: Check if user is already authenticated and send notification
-            /*else {
+            else {
                 Notification::make('auth_error')
                     ->warning()
-                    ->title('Authentification échouée')
+                    ->title('Authentification déjà effectuée')
                     ->body('Vous êtes déjà authentifié.')
                     ->send();
-            }*/
+            }
+        }
+    }
+
+    public function convertCurrency($amount, $from, $to)
+    {
+        $currencyApiKey = env('CURRENCY_API_KEY');
+        $result = Http::get("https://v6.exchangerate-api.com/v6/$currencyApiKey/pair/$from/$to/$amount");
+
+        try {
+            $result = $result->json();
+            return $result['conversion_result'];
+        } catch (\Exception $e) {
+            return $amount;
         }
     }
 
