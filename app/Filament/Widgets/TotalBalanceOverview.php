@@ -13,11 +13,10 @@ class TotalBalanceOverview extends BaseWidget
     protected function getCards(): array
     {
         $powensDomainUrl = env('POWENS_DOMAIN_URL');
-        $currencyApiKey = env('CURRENCY_API_KEY');
 
         return [
             Card::make('Solde Total', 'N/A')
-                ->value(function () use ($powensDomainUrl, $currencyApiKey) {
+                ->value(function () use ($powensDomainUrl) {
                     $total = 0;
                     $powensRepository = new PowensRepository();
 
