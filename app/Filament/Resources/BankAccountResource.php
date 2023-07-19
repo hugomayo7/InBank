@@ -61,7 +61,6 @@ class BankAccountResource extends Resource
                     ->label('Dernière mise à jour')
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('connection_id')->label('ID de connexion'),
-                Tables\Columns\TextColumn::make('account_id')->label('ID de compte'),
             ])
             ->filters([
                 //

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\BankAccountResource\Pages;
 
 use App\Filament\Resources\BankAccountResource;
 use App\Interfaces\PowensRepositoryInterface;
+use Closure;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\App;
@@ -41,5 +42,10 @@ class ListBankAccounts extends ListRecords
                 ->hidden(!$auth_token)
                 ->icon('heroicon-o-cog'),
         ];
+    }
+
+    protected function getTableRecordUrlUsing(): ?Closure
+    {
+        return null;
     }
 }

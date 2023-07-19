@@ -1,6 +1,6 @@
 <x-filament::widget class="filament-stats-overview-widget" wire:ignore>
     <header
-        class="filament-header items-start justify-between space-y-2 sm:flex sm:space-x-4 sm:space-y-0 sm:py-4 sm:rtl:space-x-reverse">
+        class="filament-header items-start justify-between space-y-2 sm:flex sm:space-x-4 sm:space-y-0 pb-4 sm:rtl:space-x-reverse">
         <div>
             <h2 @class(['filament-header-heading', 'text-xl', 'font-bold', 'tracking-tight'])>{{ $this->getTitle() }}</h2>
         </div>
