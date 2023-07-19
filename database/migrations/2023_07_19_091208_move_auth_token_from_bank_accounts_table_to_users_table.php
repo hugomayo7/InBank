@@ -11,10 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('bank_accounts', function (Blueprint $table) {
-            $table->dropColumn('auth_token');
-        });
-
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('email_verified_at');
             $table->string('auth_token')->after('remember_token')->nullable();
@@ -26,11 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('bank_accounts', function (Blueprint $table) {
-            $table->string('auth_token')->nullable();
-        });
-
         Schema::table('users', function (Blueprint $table) {
+            $table->timestamp('email_verified_at')->nullable();
             $table->dropColumn('auth_token');
         });
     }

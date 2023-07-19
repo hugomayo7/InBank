@@ -3,13 +3,9 @@
 namespace App\Filament\Widgets;
 
 use App\Interfaces\PowensRepositoryInterface;
-use App\Models\BankAccount;
-use App\Repository\PowensRepository;
-use Filament\Notifications\Notification;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Card;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Http;
 
 class TotalBalanceOverview extends BaseWidget
 {

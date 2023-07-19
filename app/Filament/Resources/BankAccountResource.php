@@ -104,4 +104,9 @@ class BankAccountResource extends Resource
             'edit' => Pages\EditBankAccount::route('/{record}/edit'),
         ];
     }
+
+    protected static function getNavigationBadge(): ?string
+    {
+        return BankAccount::all()->count();
+    }
 }

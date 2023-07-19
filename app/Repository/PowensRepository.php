@@ -34,8 +34,7 @@ class PowensRepository implements PowensRepositoryInterface
                 ]);
 
                 if ($auth_request->successful()) {
-                    $user->auth_token = $auth_request->json()['access_token'];
-                    $user->save();
+                    $user->update(['auth_token' => $auth_request->json()['access_token']]);
                 }
             }
 
