@@ -14,7 +14,6 @@ class BankAccount extends Model
         'id',
         'user_id',
         'connector_uuid',
-        'auth_token',
         'bank_name',
         'iban',
         'last_updated_at',

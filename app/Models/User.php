@@ -42,6 +42,7 @@ class User extends Authenticatable implements FilamentUser
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'auth_token' => 'encrypted',
     ];
 
     /**

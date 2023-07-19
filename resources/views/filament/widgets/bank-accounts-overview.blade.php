@@ -8,7 +8,7 @@
     <div
         {!! ($pollingInterval = $this->getPollingInterval()) ? "wire:poll.{$pollingInterval}" : '' !!}
     >
-        <div @class(['py-8'])>
+        <div @class(['pb-8'])>
             <div class="glide">
                 <div class="glide__track" data-glide-el="track" wire:ignore>
                     <ul class="glide__slides">

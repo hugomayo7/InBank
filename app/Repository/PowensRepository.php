@@ -6,9 +6,9 @@ use App\Interfaces\PowensRepositoryInterface;
 use App\Models\BankAccount;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class PowensRepository implements PowensRepositoryInterface
 {
@@ -167,6 +167,47 @@ class PowensRepository implements PowensRepositoryInterface
         $ids = array_unique($connection_ids);
         foreach ($ids as $connection_id) {
             $this->deleteConnection($auth_token, $connection_id);
+        }
+    }
+
+    public function updateConnection($auth_token, $connection_id)
+    {
+        $request = Http::withToken($auth_token)->get("$this->api_url/users/me/connections/$connection_id/accounts");
+
+        if ($request->successful()) {
+            $bankAccounts = BankAccount::where('connection_id', $connection_id)->get();
+            $fetchBankAccounts = $request->json()['accounts'];
+
+            $bankAccounts->map(function ($bankAccount) use ($fetchBankAccounts) {
+                $fetchBankAccount = collect($fetchBankAccounts)->firstWhere('id', $bankAccount->account_id);
+
+                if ($fetchBankAccount && Carbon::parse($fetchBankAccount['last_update'])->isPast()) {
+                    $bankAccount->update([
+                        'last_updated_at' => $fetchBankAccount['last_update'],
+                        'balance' => $fetchBankAccount['balance'],
+                    ]);
+                }
+            });
+
+            Notification::make('connection_updated')
+                ->success()
+                ->title('Connexion mise à jour')
+                ->body('La connexion a été mise à jour avec succès.')
+                ->send();
+        } else {
+            Notification::make('connection_updated')
+                ->danger()
+                ->title('Erreur')
+                ->body('Une erreur est survenue lors de la mise à jour de la connexion.')
+                ->send();
+        }
+    }
+
+    public function updateConnections($auth_token, $connection_ids)
+    {
+        $ids = array_unique($connection_ids);
+        foreach ($ids as $connection_id) {
+            $this->updateConnection($auth_token, $connection_id);
         }
     }
 }

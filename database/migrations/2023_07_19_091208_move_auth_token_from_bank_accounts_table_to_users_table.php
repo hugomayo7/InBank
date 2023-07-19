@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('email_verified_at');
-            $table->string('auth_token')->after('remember_token')->nullable();
+            $table->longText('auth_token')->after('remember_token')->nullable();
         });
     }
 
