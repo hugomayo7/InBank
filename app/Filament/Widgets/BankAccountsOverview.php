@@ -6,11 +6,10 @@ use App\Interfaces\PowensRepositoryInterface;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Card;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Http;
 
 class BankAccountsOverview extends BaseWidget
 {
-    protected static ?string $pollingInterval = '1000';
+    protected static ?string $pollingInterval = null;
 
     protected static string $view = 'filament.widgets.bank-accounts-overview';
 
@@ -19,7 +18,8 @@ class BankAccountsOverview extends BaseWidget
         return 3;
     }
 
-    protected function getTitle() {
+    protected function getTitle()
+    {
         return 'Mes comptes';
     }
 
@@ -38,7 +38,7 @@ class BankAccountsOverview extends BaseWidget
             return Card::make($bankAccount->bank_name, 'N/A')
                 ->value(function () use ($bankAccount, &$icon, $accounts) {
 
-                    $balance = collect($accounts)->where('id', $bankAccount->id)->first()['balance'];
+                    $balance = format_currency(collect($accounts)->where('id', $bankAccount->id)->first()['balance']);
                     $currency = collect($accounts)->where('id', $bankAccount->id)->first()['currency']['symbol'];
 
                     switch ($bankAccount->bank_name) {

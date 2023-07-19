@@ -59,7 +59,6 @@ class PowensRepository implements PowensRepositoryInterface
                         'id' => $account['id'],
                         'user_id' => $user->id,
                         'connector_uuid' => $account['connection']['connector']['uuid'],
-                        'connection_id' => $account['id_connection'],
                         'bank_name' => $account['connection']['connector']['name'],
                         'iban' => $account['iban'],
                         'account_id' => $account['id'],
@@ -68,6 +67,8 @@ class PowensRepository implements PowensRepositoryInterface
                     ]);
 
                     if ($bankAccount->wasRecentlyCreated) {
+                        $bankAccount->update(['connection_id' => $account['id_connection']]);
+
                         Notification::make('account_created')
                             ->success()
                             ->title('Authentification réussie')
@@ -134,7 +135,7 @@ class PowensRepository implements PowensRepositoryInterface
                 ->send();
         }
 
-        return round($total, 2) . ' €' ?? '0';
+        return format_currency($total) . ' €' ?? '0';
     }
 
     public function deleteConnection($auth_token, $connection_id)

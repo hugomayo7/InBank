@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\App;
 
 class TotalBalanceOverview extends BaseWidget
 {
-    protected static ?string $pollingInterval = '1000';
+    protected static ?string $pollingInterval = null;
 
     protected function getCards(): array
     {

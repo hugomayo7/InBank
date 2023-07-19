@@ -9,13 +9,19 @@ interface PowensRepositoryInterface
 {
     public function authenticate(Authenticatable|null $user, Request $request);
 
-//    public function getAccounts($user);
-//
-//    public function getAccount($user, $account_id);
-//
-//    public function getTransactions($user, $account_id);
-//
-//    public function getTransaction($user, $account_id, $transaction_id);
-//
-//    public function getBalance($user, $account_id);
+    public function getAccounts(string $auth_token);
+
+    public function getAccount(string $auth_token, string $account_id);
+
+    public function getConnectionAccounts(string $auth_token, $connection_id);
+
+    public function getTotalBalance(string $auth_token);
+
+    public function deleteConnection(string $auth_token, string $connection_id);
+
+    public function deleteConnections(string $auth_token, array $connection_ids);
+
+    public function updateConnection(string $auth_token, string $connection_id);
+
+    public function updateConnections(string $auth_token, array $connection_ids);
 }

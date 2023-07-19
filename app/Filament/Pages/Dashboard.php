@@ -5,7 +5,6 @@ namespace App\Filament\Pages;
 use App\Filament\Widgets\BankAccountsOverview;
 use App\Filament\Widgets\TotalBalanceOverview;
 use App\Interfaces\PowensRepositoryInterface;
-use App\Repository\PowensRepository;
 use Filament\Pages\Dashboard as BasePage;
 use Illuminate\Support\Facades\App;
 
