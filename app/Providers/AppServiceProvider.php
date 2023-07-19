@@ -28,10 +28,14 @@ class AppServiceProvider extends ServiceProvider
             $clientId = env('POWENS_CLIENT_ID');
             $redirectUri = env('POWENS_REDIRECT_URI');
 
+            $auth_token = auth()->user()->auth_token;
+
+            $url = $auth_token ? "$powensDomainUrl/auth/webview/connect?client_id=$clientId&redirect_uri=$redirectUri&code=$auth_token" : "$powensDomainUrl/auth/webview/connect?client_id=$clientId&redirect_uri=$redirectUri";
+
             Filament::registerUserMenuItems([
                 UserMenuItem::make()
                     ->label('Connecter un compte')
-                    ->url("$powensDomainUrl/auth/webview/connect?client_id=$clientId&redirect_uri=$redirectUri")
+                    ->url($url)
                     ->icon('heroicon-s-plus'),
             ]);
         });

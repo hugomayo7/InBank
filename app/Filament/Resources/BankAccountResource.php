@@ -63,10 +63,7 @@ class BankAccountResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\Action::make('revoke_account')
-                ->action(function () {
 
-                }),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

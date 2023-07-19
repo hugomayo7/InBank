@@ -2,8 +2,10 @@
 
 namespace App\Filament\Widgets;
 
+use App\Interfaces\PowensRepositoryInterface;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Card;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 
 class BankAccountsOverview extends BaseWidget
@@ -17,25 +19,21 @@ class BankAccountsOverview extends BaseWidget
 
     protected function getCards(): array
     {
-        $powensDomainUrl = env('POWENS_DOMAIN_URL');
-
         $bankIcons = [
             'PayPal' => 'fab-paypal',
         ];
 
-        return auth()->user()->bankAccounts->map(function ($bankAccount) use ($powensDomainUrl, $bankIcons) {
+        $accounts = App::get(PowensRepositoryInterface::class)->getAccounts(auth()->user()->auth_token)->json()['accounts'];
+
+        return auth()->user()->bankAccounts->map(function ($bankAccount) use ($bankIcons, $accounts) {
 
             $icon = $bankIcons[$bankAccount->bank_name] ?? 'fas-building-columns';
 
             return Card::make($bankAccount->bank_name, 'N/A')
-                ->value(function () use ($bankAccount, $powensDomainUrl, &$icon) {
+                ->value(function () use ($bankAccount, &$icon, $accounts) {
 
-                    $request = Http::withToken($bankAccount->auth_token)
-                        ->get("$powensDomainUrl/users/me/accounts")
-                        ->json();
-
-                    $balance = collect($request['accounts'])->where('id', $bankAccount->id)->first()['balance'];
-                    $currency = collect($request['accounts'])->where('id', $bankAccount->id)->first()['currency']['symbol'];
+                    $balance = collect($accounts)->where('id', $bankAccount->id)->first()['balance'];
+                    $currency = collect($accounts)->where('id', $bankAccount->id)->first()['currency']['symbol'];
 
                     switch ($bankAccount->bank_name) {
                         case 'PayPal':

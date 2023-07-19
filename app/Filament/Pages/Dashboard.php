@@ -7,6 +7,7 @@ use App\Filament\Widgets\TotalBalanceOverview;
 use App\Interfaces\PowensRepositoryInterface;
 use App\Repository\PowensRepository;
 use Filament\Pages\Dashboard as BasePage;
+use Illuminate\Support\Facades\App;
 
 class Dashboard extends BasePage
 {
@@ -15,9 +16,9 @@ class Dashboard extends BasePage
 
     public static $icon = 'heroicon-s-home';
 
-    public function mount(PowensRepository $powensRepository)
+    public function mount()
     {
-        $powensRepository->authenticate(auth()->user(), request());
+        App::get(PowensRepositoryInterface::class)->authenticate(auth()->user(), request());
     }
 
     protected function getColumns(): int|string|array
@@ -33,5 +34,8 @@ class Dashboard extends BasePage
         ];
     }
 
-
+    protected static function getNavigationBadge(): ?string
+    {
+        return App::get(PowensRepositoryInterface::class)->getTotalBalance(auth()->user()->auth_token);
+    }
 }
