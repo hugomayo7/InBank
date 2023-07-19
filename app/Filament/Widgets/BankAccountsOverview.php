@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Http;
 
 class BankAccountsOverview extends BaseWidget
 {
+    protected static ?string $pollingInterval = '1000';
+
     protected function getColumns(): int
     {
         return 3;

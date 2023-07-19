@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Http;
 
 class TotalBalanceOverview extends BaseWidget
 {
+    protected static ?string $pollingInterval = '1000';
+
     protected function getCards(): array
     {
         $powensDomainUrl = env('POWENS_DOMAIN_URL');
@@ -20,7 +22,7 @@ class TotalBalanceOverview extends BaseWidget
                     $total = 0;
                     $powensRepository = new PowensRepository();
 
-                    // todo : refactor ? => call all banks in one request
+                    // todo : refactor ? => call all banks with one request
                     foreach (BankAccount::all() as $bankAccount) {
                         $request = Http::withToken($bankAccount->auth_token)
                             ->get("$powensDomainUrl/users/me/accounts")
@@ -32,7 +34,7 @@ class TotalBalanceOverview extends BaseWidget
                             $currency = $bank['currency']['id'];
                             $balance = $bank['balance'];
 
-                            $convertedResult = $powensRepository->convertCurrency($balance, $currency, 'EUR');
+                            $convertedResult = convert_currency($balance, $currency, 'EUR');
 
                             $total += $convertedResult;
                         } else {
