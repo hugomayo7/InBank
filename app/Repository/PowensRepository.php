@@ -128,13 +128,46 @@ class PowensRepository implements PowensRepositoryInterface
                     $total += $bankAccount['balance'];
                 }
             }
-        } else {
+        } else if (auth()->user()->auth_token) {
             Notification::make('auth_error')
                 ->title('Erreur')
                 ->body('Une erreur est survenue lors de la récupération des comptes bancaires')
                 ->send();
         }
 
-        return round($total, 2) . ' €' ?? 'N/A';
+        return round($total, 2) . ' €' ?? '0';
+    }
+
+    public function deleteConnection($auth_token, $connection_id)
+    {
+        $request = Http::withToken($auth_token)->delete("$this->api_url/users/me/connections/$connection_id");
+
+        if ($request->successful()) {
+            $bankAccounts = BankAccount::where('connection_id', $connection_id)->get();
+
+            foreach ($bankAccounts as $bankAccount) {
+                $bankAccount->delete();
+            }
+
+            Notification::make('connection_deleted')
+                ->success()
+                ->title('Connexion supprimée')
+                ->body('La connexion a été supprimée avec succès.')
+                ->send();
+        } else {
+            Notification::make('connection_deleted')
+                ->danger()
+                ->title('Erreur')
+                ->body('Une erreur est survenue lors de la suppression de la connexion.')
+                ->send();
+        }
+    }
+
+    public function deleteConnections($auth_token, $connection_ids)
+    {
+        $ids = array_unique($connection_ids);
+        foreach ($ids as $connection_id) {
+            $this->deleteConnection($auth_token, $connection_id);
+        }
     }
 }

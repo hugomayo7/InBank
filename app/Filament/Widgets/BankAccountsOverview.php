@@ -12,9 +12,15 @@ class BankAccountsOverview extends BaseWidget
 {
     protected static ?string $pollingInterval = '1000';
 
+    protected static string $view = 'filament.widgets.bank-accounts-overview';
+
     protected function getColumns(): int
     {
         return 3;
+    }
+
+    protected function getTitle() {
+        return 'Mes comptes';
     }
 
     protected function getCards(): array
@@ -23,7 +29,7 @@ class BankAccountsOverview extends BaseWidget
             'PayPal' => 'fab-paypal',
         ];
 
-        $accounts = App::get(PowensRepositoryInterface::class)->getAccounts(auth()->user()->auth_token)->json()['accounts'];
+        $accounts = App::get(PowensRepositoryInterface::class)->getAccounts(auth()->user()->auth_token)->json()['accounts'] ?? [];
 
         return auth()->user()->bankAccounts->map(function ($bankAccount) use ($bankIcons, $accounts) {
 

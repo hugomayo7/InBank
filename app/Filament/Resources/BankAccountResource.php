@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BankAccountResource\Pages;
 use App\Filament\Resources\BankAccountResource\RelationManagers;
+use App\Interfaces\PowensRepositoryInterface;
 use App\Models\BankAccount;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -12,6 +13,7 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\App;
 use Webbingbrasil\FilamentCopyActions\Tables\CopyableTextColumn;
 
 class BankAccountResource extends Resource
@@ -49,8 +51,10 @@ class BankAccountResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('bank_name')->label('Banque'),
-                Tables\Columns\TextColumn::make('original_name')->label('Nom de compte'),
+                Tables\Columns\TextColumn::make('original_name')->label('Nom de compte')->limit(30),
                 CopyableTextColumn::make('iban')
+                    ->iconPosition('after')
+                    ->iconColor('primary')
                     ->successMessage('IBAN copié !')
                     ->copyable(),
                 Tables\Columns\TextColumn::make('last_updated_at')
@@ -63,10 +67,25 @@ class BankAccountResource extends Resource
                 //
             ])
             ->actions([
-
+                Tables\Actions\Action::make('delete_connection')
+                    ->label('Supprimer la connexion')
+                    ->color('danger')
+                    ->icon('heroicon-o-trash')
+                    ->action(function (BankAccount $record) {
+                        App::get(PowensRepositoryInterface::class)->deleteConnection(auth()->user()->auth_token, $record->connection_id);
+                    }),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\BulkAction::make('delete')
+                    ->label('Supprimer')
+                    ->icon('heroicon-o-trash')
+                    ->action(function ($records) {
+                        $ids = array_map(function ($record) {
+                            return $record->connection_id;
+                        }, $records->all());
+
+                        App::get(PowensRepositoryInterface::class)->deleteConnections(auth()->user()->auth_token, $ids);
+                    }),
             ]);
     }
 

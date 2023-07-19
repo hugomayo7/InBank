@@ -27,7 +27,6 @@ class AppServiceProvider extends ServiceProvider
             $powensDomainUrl = env('POWENS_DOMAIN_URL');
             $clientId = env('POWENS_CLIENT_ID');
             $redirectUri = env('POWENS_REDIRECT_URI');
-
             $auth_token = auth()->user()->auth_token;
 
             $url = $auth_token ? "$powensDomainUrl/auth/webview/connect?client_id=$clientId&redirect_uri=$redirectUri&code=$auth_token" : "$powensDomainUrl/auth/webview/connect?client_id=$clientId&redirect_uri=$redirectUri";
