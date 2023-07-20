@@ -211,8 +211,11 @@
 </script>
 <style>
     .iban-copied {
-        background-color: #4caf50;
+        background-color: #2563eb;
         color: #fff;
+    }
+    .iban-copied:hover {
+        background-color: #2563eb;
     }
 </style>
 </{!! $tag !!}>
