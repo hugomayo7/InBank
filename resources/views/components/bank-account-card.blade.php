@@ -190,9 +190,29 @@
         if (document.getElementById('iban_' + '{!! $accountId !!}')) {
             document.getElementById('iban_' + '{!! $accountId !!}').addEventListener('click', () => {
                 navigator.clipboard.writeText('{!! $iban !!}');
-                document.getElementById('iban_' + '{!! $accountId !!}').innerText = 'Copié !';
+                const ibanElement = document.getElementById('iban_' + '{!! $accountId !!}');
+                const ibanText = ibanElement.getElementsByTagName('p')[0];
+                const iconElement = ibanElement.getElementsByTagName('i')[0];
+                ibanText.innerText = 'Copié';
+                iconElement.classList.remove('fa-regular', 'fa-clipboard');
+                iconElement.classList.add('fa-solid', 'fa-check', 'fa-bounce');
+                ibanElement.classList.add('iban-copied');
+
+                setTimeout(() => {
+                    // Reset the icon and remove the green background class after a short delay
+                    iconElement.classList.remove('fa-solid', 'fa-check', 'fa-bounce');
+                    iconElement.classList.add('fa-regular', 'fa-clipboard');
+                    ibanElement.classList.remove('iban-copied');
+                    ibanText.innerText = 'IBAN';
+                }, 2000);
             });
         }
     })
 </script>
+<style>
+    .iban-copied {
+        background-color: #4caf50;
+        color: #fff;
+    }
+</style>
 </{!! $tag !!}>
