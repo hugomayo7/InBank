@@ -10,6 +10,13 @@ class Transaction extends Model
 {
     use HasFactory;
 
+    const CARD_TYPE = 'Carte';
+    const TRANSFER_TYPE = 'Virement';
+    const ORDER_TYPE = 'Prélèvement';
+    const WITHDRAWAL_TYPE = 'Retrait';
+    const BANK = 'Banque';
+    const UNKNOWN_TYPE = 'Inconnu';
+
     protected $fillable = [
         'bank_account_id',
         'value',

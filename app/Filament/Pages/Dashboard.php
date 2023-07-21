@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Widgets\BankAccountsOverview;
+use App\Filament\Widgets\Tables\TransactionsTable;
 use App\Filament\Widgets\TotalBalanceOverview;
 use App\Interfaces\PowensRepositoryInterface;
 use Filament\Pages\Dashboard as BasePage;
@@ -30,7 +31,8 @@ class Dashboard extends BasePage
     {
         return [
             TotalBalanceOverview::class,
-            BankAccountsOverview::class
+            BankAccountsOverview::class,
+            TransactionsTable::class
         ];
     }
 
