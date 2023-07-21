@@ -67,7 +67,10 @@ class BankAccountsOverview extends BaseWidget
                 ->iban($bankAccount->iban ?? null)
                 ->accountId($bankAccount->account_id)
                 ->description($bankAccount->original_name)
-                ->icon($icon);
+                ->icon($icon)
+                ->extraAttributes([
+                    'wire:key' => $bankAccount->id,
+                ]);
         })->toArray();
     }
 }

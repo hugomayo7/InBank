@@ -13,6 +13,7 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
+        "livewire/livewire": "^2.12",
         "owenvoke/blade-fontawesome": "^2.3",
         "webbingbrasil/filament-copyactions": "^1.1"
     },
