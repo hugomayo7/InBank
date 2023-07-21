@@ -173,33 +173,25 @@ class PowensRepository implements PowensRepositoryInterface
 
     public function updateConnection($auth_token, $connection_id)
     {
-        $request = Http::withToken($auth_token)->get("$this->api_url/users/me/connections/$connection_id/accounts");
+        $request = Http::withToken($auth_token)->put("$this->api_url/users/me/connections/$connection_id");
 
         if ($request->successful()) {
             $bankAccounts = BankAccount::where('connection_id', $connection_id)->get();
-            $fetchBankAccounts = $request->json()['accounts'];
 
-            $bankAccounts->map(function ($bankAccount) use ($fetchBankAccounts) {
-                $fetchBankAccount = collect($fetchBankAccounts)->firstWhere('id', $bankAccount->account_id);
-
-                if ($fetchBankAccount && Carbon::parse($fetchBankAccount['last_update'])->isPast()) {
-                    $bankAccount->update([
-                        'last_updated_at' => $fetchBankAccount['last_update'],
-                        'balance' => $fetchBankAccount['balance'],
-                    ]);
-                }
-            });
+            foreach ($bankAccounts as $bankAccount) {
+                $bankAccount->update(['last_updated_at' => $request->json()['last_update']]);
+            }
 
             Notification::make('connection_updated')
                 ->success()
-                ->title('Connexion mise à jour')
-                ->body('La connexion a été mise à jour avec succès.')
+                ->title('Données mise à jour')
+                ->body('Les données ont été mises à jour avec succès.')
                 ->send();
         } else {
-            Notification::make('connection_updated')
+            Notification::make('connection_updated_error')
                 ->danger()
                 ->title('Erreur')
-                ->body('Une erreur est survenue lors de la mise à jour de la connexion.')
+                ->body('Une erreur est survenue lors de la mise à jour des données.')
                 ->send();
         }
     }
@@ -210,5 +202,12 @@ class PowensRepository implements PowensRepositoryInterface
         foreach ($ids as $connection_id) {
             $this->updateConnection($auth_token, $connection_id);
         }
+    }
+
+    public function refreshData()
+    {
+        $connection_ids_to_update = array_unique(BankAccount::all()->pluck('connection_id')->toArray());
+
+        $this->updateConnections(auth()->user()->auth_token, $connection_ids_to_update);
     }
 }

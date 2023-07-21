@@ -189,7 +189,8 @@
     document.addEventListener('livewire:load', function () {
         if (document.getElementById('iban_' + '{!! $accountId !!}')) {
             document.getElementById('iban_' + '{!! $accountId !!}').addEventListener('click', () => {
-                navigator.clipboard.writeText('{!! $iban !!}');
+                var formattedIban = '{!! $iban !!}'.replace(/(.{4})/g, '$1 ').trim();
+                navigator.clipboard.writeText(formattedIban);
                 const ibanElement = document.getElementById('iban_' + '{!! $accountId !!}');
                 const ibanText = ibanElement.getElementsByTagName('p')[0];
                 const iconElement = ibanElement.getElementsByTagName('i')[0];

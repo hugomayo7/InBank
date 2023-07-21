@@ -24,4 +24,6 @@ interface PowensRepositoryInterface
     public function updateConnection(string $auth_token, string $connection_id);
 
     public function updateConnections(string $auth_token, array $connection_ids);
+
+    public function refreshData();
 }

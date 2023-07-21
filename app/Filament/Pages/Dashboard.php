@@ -18,6 +18,7 @@ class Dashboard extends BasePage
     public function mount()
     {
         App::get(PowensRepositoryInterface::class)->authenticate(auth()->user(), request());
+        App::get(PowensRepositoryInterface::class)->refreshData();
     }
 
     protected function getColumns(): int|string|array
