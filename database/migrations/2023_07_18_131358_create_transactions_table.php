@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->text('stemmed_wording');
             $table->text('wording');
 
-            $table->tinyInteger('type');
+            $table->string('type');
 
             $table->date('application_date');
 

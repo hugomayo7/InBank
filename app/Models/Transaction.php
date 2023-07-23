@@ -14,7 +14,8 @@ class Transaction extends Model
     const TRANSFER_TYPE = 'Virement';
     const ORDER_TYPE = 'Prélèvement';
     const WITHDRAWAL_TYPE = 'Retrait';
-    const BANK = 'Banque';
+    const BANK_TYPE = 'Frais bancaires';
+    const PAYBACK_TYPE = 'Remboursement';
     const UNKNOWN_TYPE = 'Inconnu';
 
     protected $fillable = [

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Interfaces\PowensRepositoryInterface;
 use App\Models\BankAccount;
+use App\Models\Transaction;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Http;
@@ -188,11 +189,11 @@ class PowensRepository implements PowensRepositoryInterface
                 ->body('Les données ont été mises à jour avec succès.')
                 ->send();
         } else {
-            Notification::make('connection_updated_error')
-                ->danger()
-                ->title('Erreur')
-                ->body('Une erreur est survenue lors de la mise à jour des données.')
-                ->send();
+//            Notification::make('connection_updated_error')
+//                ->danger()
+//                ->title('Erreur')
+//                ->body('Une erreur est survenue lors de la mise à jour des données.')
+//                ->send();
         }
     }
 
@@ -209,5 +210,73 @@ class PowensRepository implements PowensRepositoryInterface
         $connection_ids_to_update = array_unique(BankAccount::all()->pluck('connection_id')->toArray());
 
         $this->updateConnections(auth()->user()->auth_token, $connection_ids_to_update);
+        $this->fetchAllTransactions(auth()->user()->auth_token);
+    }
+
+    public function fetchAllTransactions($auth_token)
+    {
+        $last_transaction_date = Transaction::orderBy('application_date', 'desc')->first()->application_date ?? null;
+
+        if (!$last_transaction_date) {
+            $request = Http::withToken($auth_token)->get("$this->api_url/users/me/transactions");
+        } else {
+            $last_transaction_date = Carbon::parse($last_transaction_date)->addDay()->format('Y-m-d');
+            $request = Http::withToken($auth_token)->get("$this->api_url/users/me/transactions?min_date=$last_transaction_date");
+        }
+
+        if ($request->successful()) {
+            $transactions = $request->json()['transactions'];
+            $insert_transactions = [];
+
+            foreach ($transactions as $transaction) {
+                $bankAccount = BankAccount::where('account_id', $transaction['id_account'])->first();
+
+                if ($bankAccount) {
+                    $type = null;
+                    switch ($transaction['type']) {
+                        case 'card':
+                            $type = Transaction::CARD_TYPE;
+                            break;
+                        case 'transfer':
+                            $type = Transaction::TRANSFER_TYPE;
+                            break;
+                        case 'order':
+                            $type = Transaction::ORDER_TYPE;
+                            break;
+                        case 'payback':
+                            $type = Transaction::PAYBACK_TYPE;
+                            break;
+                        case 'withdrawal':
+                            $type = Transaction::WITHDRAWAL_TYPE;
+                            break;
+                        case 'bank':
+                            $type = Transaction::BANK_TYPE;
+                            break;
+                        default:
+                            $type = Transaction::UNKNOWN_TYPE;
+                            break;
+                    }
+
+                    $insert_transactions[] = [
+                        'bank_account_id' => $bankAccount->id,
+                        'value' => $transaction['value'] * 100,
+                        'original_wording' => $transaction['original_wording'],
+                        'simplified_wording' => $transaction['simplified_wording'],
+                        'stemmed_wording' => $transaction['stemmed_wording'],
+                        'wording' => $transaction['wording'],
+                        'type' => $type,
+                        'application_date' => $transaction['application_date'],
+                    ];
+                }
+            }
+
+            Transaction::insert($insert_transactions);
+        } else {
+            Notification::make('transactions_error')
+                ->danger()
+                ->title('Erreur')
+                ->body('Une erreur est survenue lors de la récupération des transactions.')
+                ->send();
+        }
     }
 }

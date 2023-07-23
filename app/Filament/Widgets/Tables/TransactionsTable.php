@@ -20,53 +20,66 @@ class TransactionsTable extends BaseWidget
         return auth()->user()->bankAccounts()->count() > 0
             ? Transaction::query()
                 ->whereHas('bankAccount', fn(Builder $query) => $query->where('user_id', auth()->id()))
-                ->with('bankAccount')
+                ->with('bankAccount')->orderBy('application_date', 'desc')
             : Transaction::query();
     }
 
     protected function getTableColumns(): array
     {
         return [
-            Tables\Columns\TextColumn::make('bankAccount.bank_name'),
+            Tables\Columns\TextColumn::make('bankAccount.bank_name')->label('Banque'),
 
-            Tables\Columns\TextColumn::make('value')
+            Tables\Columns\BadgeColumn::make('value')
+                ->label('Montant')
                 ->color(fn($record) => $record->value > 0 ? 'success' : 'danger')
-                ->money('EUR', true)
+                ->formatStateUsing(fn($record) => $record->value > 0 ? '+' . format_currency($record->value) : format_currency($record->value))
+                ->suffix(' €')
+                ->searchable()
                 ->sortable(),
 
-            /*Tables\Columns\TextColumn::make('original_wording'),
-
-            Tables\Columns\TextColumn::make('simplified_wording'),
-
-            Tables\Columns\TextColumn::make('stemmed_wording'),*/
-
             Tables\Columns\TextColumn::make('wording')
-                ->limit(50)
+                ->label('Libellé')
+                ->limit(60)
                 ->searchable(),
 
             Tables\Columns\BadgeColumn::make('type')
+                ->label('Type')
                 ->enum([
-                    Transaction::CARD_TYPE => 'Card',
-                    Transaction::TRANSFER_TYPE => 'Transfer',
-                    Transaction::ORDER_TYPE => 'Order',
-                    Transaction::WITHDRAWAL_TYPE => 'Withdrawal',
-                    Transaction::BANK => 'Bank',
-                    Transaction::UNKNOWN_TYPE => 'Unknown',
+                    Transaction::CARD_TYPE => 'Carte',
+                    Transaction::TRANSFER_TYPE => 'Virement',
+                    Transaction::ORDER_TYPE => 'Prélèvement',
+                    Transaction::WITHDRAWAL_TYPE => 'Retrait',
+                    Transaction::PAYBACK_TYPE => 'Remboursement',
+                    Transaction::BANK_TYPE => 'Frais bancaires',
+                    Transaction::UNKNOWN_TYPE => 'Inconnu',
                 ])
-                ->colors(
-                    [
-                        'primary' => Transaction::CARD_TYPE,
-                        'success' => Transaction::TRANSFER_TYPE,
-                        'warning' => Transaction::ORDER_TYPE,
-                        'danger' => Transaction::WITHDRAWAL_TYPE,
-                        'neutral' => Transaction::BANK,
-                        'dark' => Transaction::UNKNOWN_TYPE,
-                    ]
-                ),
+                ->color('primary'),
 
             Tables\Columns\TextColumn::make('application_date')
+                ->label('Date')
                 ->sortable()
                 ->date('j F Y'),
+        ];
+    }
+
+    protected function getTableFilters(): array
+    {
+        return [
+            Tables\Filters\SelectFilter::make('type')
+                ->label('Type')
+                ->options([
+                    Transaction::CARD_TYPE => 'Carte',
+                    Transaction::TRANSFER_TYPE => 'Virement',
+                    Transaction::ORDER_TYPE => 'Prélèvement',
+                    Transaction::WITHDRAWAL_TYPE => 'Retrait',
+                    Transaction::PAYBACK_TYPE => 'Remboursement',
+                    Transaction::BANK_TYPE => 'Frais bancaires',
+                    Transaction::UNKNOWN_TYPE => 'Inconnu',
+                ]),
+
+            Tables\Filters\SelectFilter::make('bank_account_id')
+                ->label('Banque')
+                ->options(fn() => array_unique(auth()->user()->bankAccounts()->pluck('bank_name', 'id')->toArray())),
         ];
     }
 
