@@ -19,6 +19,7 @@ class Transaction extends Model
     const UNKNOWN_TYPE = 'Inconnu';
 
     protected $fillable = [
+        'transaction_id',
         'bank_account_id',
         'value',
         'original_wording',

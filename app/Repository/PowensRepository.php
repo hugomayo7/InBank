@@ -221,13 +221,12 @@ class PowensRepository implements PowensRepositoryInterface
         if (!$last_transaction_date) {
             $request = Http::withToken($auth_token)->get("$this->api_url/users/me/transactions");
         } else {
-            $last_transaction_date = Carbon::parse($last_transaction_date)->addDay()->format('Y-m-d');
+            $last_transaction_date = Carbon::parse($last_transaction_date)->format('Y-m-d');
             $request = Http::withToken($auth_token)->get("$this->api_url/users/me/transactions?min_date=$last_transaction_date");
         }
 
         if ($request->successful()) {
             $transactions = $request->json()['transactions'];
-            $insert_transactions = [];
 
             foreach ($transactions as $transaction) {
                 $bankAccount = BankAccount::where('account_id', $transaction['id_account'])->first();
@@ -258,7 +257,10 @@ class PowensRepository implements PowensRepositoryInterface
                             break;
                     }
 
-                    $insert_transactions[] = [
+                    Transaction::updateOrInsert([
+                        'transaction_id' => $transaction['id'],
+                    ],[
+                        'transaction_id' => $transaction['id'],
                         'bank_account_id' => $bankAccount->id,
                         'value' => $transaction['value'] * 100,
                         'original_wording' => $transaction['original_wording'],
@@ -267,11 +269,9 @@ class PowensRepository implements PowensRepositoryInterface
                         'wording' => $transaction['wording'],
                         'type' => $type,
                         'application_date' => $transaction['application_date'],
-                    ];
+                    ]);
                 }
             }
-
-            Transaction::insert($insert_transactions);
         } else {
             Notification::make('transactions_error')
                 ->danger()

@@ -38,8 +38,6 @@ class ListBankAccounts extends ListRecords
                             $transactions = App::get(PowensRepositoryInterface::class)->getAccountTransactions($auth_token, $account['id']);
                         }
 
-                        $insert_transactions = [];
-
                         foreach ($transactions as $transaction) {
                             $bankAccount = BankAccount::where('account_id', $transaction['id_account'])->first();
 
@@ -69,7 +67,10 @@ class ListBankAccounts extends ListRecords
                                         break;
                                 }
 
-                                $insert_transactions[] = [
+                                Transaction::updateOrInsert([
+                                    'transaction_id' => $transaction['id'],
+                                ],[
+                                    'transaction_id' => $transaction['id'],
                                     'bank_account_id' => $bankAccount->id,
                                     'value' => $transaction['value'] * 100,
                                     'original_wording' => $transaction['original_wording'],
@@ -78,11 +79,9 @@ class ListBankAccounts extends ListRecords
                                     'wording' => $transaction['wording'],
                                     'type' => $type,
                                     'application_date' => $transaction['application_date'],
-                                ];
+                                ]);
                             }
                         }
-
-                        Transaction::insert($insert_transactions);
                     }
                 }
             } else {
