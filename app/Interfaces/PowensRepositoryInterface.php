@@ -28,4 +28,6 @@ interface PowensRepositoryInterface
     public function refreshData();
 
     public function fetchAllTransactions(string $auth_token);
+
+    public function getAccountTransactions(string $auth_token, string $account_id);
 }

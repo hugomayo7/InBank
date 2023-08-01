@@ -184,7 +184,6 @@
         </canvas>
     </div>
 @endif
-<script src="https://kit.fontawesome.com/29ab85e66a.js" crossorigin="anonymous"></script>
 <script>
     document.addEventListener('livewire:load', function () {
         if (document.getElementById('iban_' + '{!! $accountId !!}')) {

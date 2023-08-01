@@ -15,20 +15,46 @@ class TransactionsTable extends BaseWidget
 
     protected static ?string $heading = 'Transactions';
 
+    protected $polling = false;
+
+    public function mount()
+    {
+        $this->startPolling();
+    }
+
+    public function dehydrate()
+    {
+        $this->stopPolling();
+    }
+
     protected function getTableQuery(): Builder
     {
-        return auth()->user()->bankAccounts()->count() > 0
+        $query = auth()->user()->bankAccounts()->count() > 0
             ? Transaction::query()
                 ->whereHas('bankAccount', fn(Builder $query) => $query->where('user_id', auth()->id()))
                 ->with('bankAccount')->orderBy('application_date', 'desc')
             : Transaction::query();
+
+        if ($this->polling) {
+            return $query->limit(1);
+        }
+
+        return $query;
+    }
+
+    protected function startPolling()
+    {
+        $this->polling = true;
+    }
+
+    protected function stopPolling()
+    {
+        $this->polling = false;
     }
 
     protected function getTableColumns(): array
     {
         return [
-            Tables\Columns\TextColumn::make('bankAccount.bank_name')->label('Banque'),
-
             Tables\Columns\BadgeColumn::make('value')
                 ->label('Montant')
                 ->color(fn($record) => $record->value > 0 ? 'success' : 'danger')
@@ -54,6 +80,8 @@ class TransactionsTable extends BaseWidget
                     Transaction::UNKNOWN_TYPE => 'Inconnu',
                 ])
                 ->color('primary'),
+
+            Tables\Columns\TextColumn::make('bankAccount.bank_name')->label('Banque'),
 
             Tables\Columns\TextColumn::make('application_date')
                 ->label('Date')

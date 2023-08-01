@@ -67,7 +67,8 @@ class PowensRepository implements PowensRepositoryInterface
                         'original_name' => $account['original_name'],
                     ]);
 
-                    if ($bankAccount->wasRecentlyCreated) {
+                    if ($bankAccount->connection_id == null) {
+
                         $bankAccount->update(['connection_id' => $account['id_connection']]);
 
                         Notification::make('account_created')
@@ -271,6 +272,21 @@ class PowensRepository implements PowensRepositoryInterface
             }
 
             Transaction::insert($insert_transactions);
+        } else {
+            Notification::make('transactions_error')
+                ->danger()
+                ->title('Erreur')
+                ->body('Une erreur est survenue lors de la récupération des transactions.')
+                ->send();
+        }
+    }
+
+    public function getAccountTransactions($auth_token, $account_id)
+    {
+        $request = Http::withToken($auth_token)->get("$this->api_url/users/me/accounts/$account_id/transactions");
+
+        if ($request->successful()) {
+            return $request->json()['transactions'];
         } else {
             Notification::make('transactions_error')
                 ->danger()

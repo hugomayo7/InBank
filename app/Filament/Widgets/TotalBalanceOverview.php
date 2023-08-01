@@ -12,6 +12,8 @@ class TotalBalanceOverview extends BaseWidget
 {
     protected static ?string $pollingInterval = null;
 
+    protected int|string|array $columnSpan = 1;
+
     public $balance = 'N/A';
     public function fetchBalance()
     {

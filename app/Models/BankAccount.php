@@ -24,6 +24,7 @@ class BankAccount extends Model
 
     protected $casts = [
         'last_updated_at' => 'datetime',
+        'iban' => 'encrypted'
     ];
 
     public function transactions()
