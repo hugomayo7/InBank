@@ -1,4 +1,4 @@
-<x-filament::page class="filament-dashboard-page">
+<x-filament::page class="filament-dashboard-page" wire:init="loadData()">
     <x-filament::widgets
         :widgets="$this->getWidgets()"
         :columns="$this->getColumns()"

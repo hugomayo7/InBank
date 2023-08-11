@@ -9,7 +9,11 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/filament.css'
             ],
-            refresh: true,
+            refresh: [
+                ...refreshPaths,
+                'app/Http/Livewire/**',
+                'app/Forms/Components/**',
+            ],
         }),
     ],
 });

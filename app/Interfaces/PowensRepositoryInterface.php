@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 interface PowensRepositoryInterface
 {
-    public function authenticate(Authenticatable|null $user, Request $request);
+    public function authenticate(Authenticatable|null $user, Request $request, string|null $request_connection_id, string|null $request_code);
 
     public function getAccounts(string $auth_token);
 

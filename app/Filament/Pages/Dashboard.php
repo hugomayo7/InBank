@@ -16,10 +16,27 @@ class Dashboard extends BasePage
 
     public static $icon = 'heroicon-s-home';
 
+    public $request_connection_id;
+    public $request_code;
+
     public function mount()
     {
-        App::get(PowensRepositoryInterface::class)->authenticate(auth()->user(), request());
+        if (request()->has('code')) {
+            $this->request_code = request()->get('code');
+        }
+
+        if (request()->has('connection_id')) {
+            $this->request_connection_id = request()->get('connection_id');
+        }
+    }
+
+    public function loadData()
+    {
+        App::get(PowensRepositoryInterface::class)->authenticate(auth()->user(), request(), $this->request_connection_id, $this->request_code);
         App::get(PowensRepositoryInterface::class)->refreshData();
+
+        $this->request_connection_id = null;
+        $this->request_code = null;
     }
 
     protected function getColumns(): int|string|array

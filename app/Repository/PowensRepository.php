@@ -20,9 +20,9 @@ class PowensRepository implements PowensRepositoryInterface
         $this->api_url = env('POWENS_DOMAIN_URL');
     }
 
-    public function authenticate(?Authenticatable $user, Request $request)
+    public function authenticate(?Authenticatable $user, Request $request, $request_connection_id = null, $request_code = null)
     {
-        if (request()->has('code') || request()->has('connection_id')) {
+        if ($request_code || $request_connection_id) {
             $auth_token = null;
 
             if (!$user->auth_token) {
